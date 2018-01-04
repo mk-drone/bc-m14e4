@@ -20,20 +20,66 @@ let movies = [
     }
 ];
 
-let moviesElements = movies.map((movie) => {
-    //czy style w react powinny byÄ‡ tworzone klasycznie przy pomocy osobnego pliku css?
-    //jeĹ›li tak, to kiedy warto lub zalecane jest uzycie inline style tak jak w przypadku paragrafu z linii 29
-    return React.createElement('li', {key:movie.id},
-        React.createElement('h2', {}, movie.title),
-        React.createElement('img', {src: movie.poster}),
-        React.createElement('p', {style: {position:'absolute',display:'inline'}}, movie.desc),
-    );
+let MoviePoster = React.createClass({
+    render: function(){
+        return React.createElement('img', {src: this.props.image.src});
+    },
+    propTypes: {
+        image: React.PropTypes.object.isRequired,
+    },
+})
+
+let MovieTitle = React.createClass({
+    render: function(){
+        return React.createElement('h2', {}, this.props.title);
+    },
+
+    propTypes:{
+        title: React.PropTypes.string.isRequired,
+    },
 });
 
-let element =
-    React.createElement('div', {},
-        React.createElement('h1', {}, 'Lista FilmĂłw'),
-        React.createElement('ul', {}, moviesElements)
-    );
+let MovieDescription = React.createClass({
+    render: function(){
+        return React.createElement('p', {style: {position:'absolute',display:'inline'}}, this.props.description);
+    },
 
+    propTypes:{
+        description: React.PropTypes.string.isRequired,
+    },
+});
+
+let Movie = React.createClass({
+    render: function (){
+        return React.createElement('li', {},
+            React.createElement(MovieTitle, {title: this.props.movie.title} ),
+            React.createElement(MoviePoster, {image: {src: this.props.movie.poster}}),
+            React.createElement(MovieDescription, {description: this.props.movie.desc}),
+        );
+    },
+
+    propTypes: {
+        movie: React.PropTypes.object.isRequired
+    }
+})
+
+let MovieList = React.createClass({
+    render: function(){
+        return React.createElement('div', {},
+            React.createElement('h1', {}, 'Lista Filmów'),
+            React.createElement('ul', {},
+                this.props.movieList.map((m)=>{
+                    return React.createElement(Movie, {movie:m, key: m.id})
+                })
+            )
+        );
+    },
+
+    propTypes: {
+        movieList: React.PropTypes.array.isRequired
+    }
+});
+
+
+let element = React.createElement(MovieList, {movieList: movies});
 ReactDOM.render(element, document.getElementById('app'));
